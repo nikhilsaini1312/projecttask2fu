@@ -1,10 +1,8 @@
 
-import { Product } from '../types/product';
-
-export const products: Product[] = [
+export const products = [
   {
     id: 1,
-    name: "Wireless Bluetooth Headphones",
+    name: "Wireless Headphones",
     price: 79.99,
     category: "Electronics",
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&h=300&fit=crop",
@@ -24,7 +22,7 @@ export const products: Product[] = [
     id: 3,
     name: "Coffee Mug",
     price: 12.99,
-    category: "Home & Kitchen",
+    category: "Home",
     image: "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=300&h=300&fit=crop",
     description: "Premium ceramic coffee mug with elegant design",
     inStock: true
@@ -42,7 +40,7 @@ export const products: Product[] = [
     id: 5,
     name: "Plant Pot",
     price: 24.99,
-    category: "Home & Kitchen",
+    category: "Home",
     image: "https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=300&h=300&fit=crop",
     description: "Modern ceramic plant pot perfect for indoor plants",
     inStock: false

@@ -1,19 +1,53 @@
 
 import React, { useState } from 'react';
-import { CartProvider } from '../contexts/CartContext';
 import { Header } from '../components/Header';
-import { ProductGrid } from '../components/ProductGrid';
-import { Cart } from '../components/Cart';
-import { Checkout } from '../components/Checkout';
+import { ProductList } from '../components/ProductList';
+import { ShoppingCart } from '../components/ShoppingCart';
+import { CheckoutForm } from '../components/CheckoutForm';
 import { products } from '../data/products';
 
 const Index = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [cartItems, setCartItems] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const handleCartToggle = () => {
-    setIsCartOpen(!isCartOpen);
+  const addToCart = (product) => {
+    const existingItem = cartItems.find(item => item.id === product.id);
+    if (existingItem) {
+      setCartItems(cartItems.map(item =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCartItems([...cartItems, { ...product, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (productId) => {
+    setCartItems(cartItems.filter(item => item.id !== productId));
+  };
+
+  const updateQuantity = (productId, newQuantity) => {
+    if (newQuantity === 0) {
+      removeFromCart(productId);
+    } else {
+      setCartItems(cartItems.map(item =>
+        item.id === productId
+          ? { ...item, quantity: newQuantity }
+          : item
+      ));
+    }
+  };
+
+  const getTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const handleCheckout = () => {
@@ -21,36 +55,55 @@ const Index = () => {
     setIsCheckoutOpen(true);
   };
 
-  return (
-    <CartProvider>
-      <div className="min-h-screen bg-gray-50">
-        <Header
-          onCartToggle={handleCartToggle}
-          onSearch={setSearchQuery}
-          searchQuery={searchQuery}
-        />
-        
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Our Products</h2>
-            <p className="text-gray-600">Discover amazing products at great prices</p>
-          </div>
-          
-          <ProductGrid products={products} searchQuery={searchQuery} />
-        </main>
+  const handleOrderComplete = () => {
+    setCartItems([]);
+    setIsCheckoutOpen(false);
+    alert('Order placed successfully!');
+  };
 
-        <Cart
-          isOpen={isCartOpen}
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Header
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        cartItemCount={getTotalItems()}
+        onCartClick={() => setIsCartOpen(true)}
+      />
+
+      <main className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">
+          Simple E-Commerce Store
+        </h1>
+
+        <ProductList
+          products={products}
+          searchTerm={searchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          onAddToCart={addToCart}
+        />
+      </main>
+
+      {isCartOpen && (
+        <ShoppingCart
+          cartItems={cartItems}
           onClose={() => setIsCartOpen(false)}
+          onUpdateQuantity={updateQuantity}
+          onRemoveItem={removeFromCart}
+          totalPrice={getTotalPrice()}
           onCheckout={handleCheckout}
         />
+      )}
 
-        <Checkout
-          isOpen={isCheckoutOpen}
+      {isCheckoutOpen && (
+        <CheckoutForm
+          cartItems={cartItems}
+          totalPrice={getTotalPrice()}
           onClose={() => setIsCheckoutOpen(false)}
+          onOrderComplete={handleOrderComplete}
         />
-      </div>
-    </CartProvider>
+      )}
+    </div>
   );
 };
 
