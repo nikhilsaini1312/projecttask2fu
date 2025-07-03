@@ -1,9 +1,35 @@
-
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
-export const CheckoutForm = ({ cartItems, totalPrice, onClose, onOrderComplete }) => {
-  const [formData, setFormData] = useState({
+interface FormData {
+  fullName: string;
+  email: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
+}
+
+interface FormErrors {
+  fullName?: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  zipCode?: string;
+  cardNumber?: string;
+  expiryDate?: string;
+  cvv?: string;
+}
+
+export const CheckoutForm = ({ cartItems, totalPrice, onClose, onOrderComplete }: {
+  cartItems: any[];
+  totalPrice: number;
+  onClose: () => void;
+  onOrderComplete: () => void;
+}) => {
+  const [formData, setFormData] = useState<FormData>({
     fullName: '',
     email: '',
     address: '',
@@ -14,16 +40,16 @@ export const CheckoutForm = ({ cartItems, totalPrice, onClose, onOrderComplete }
     cvv: ''
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
     // Clear error when user starts typing
-    if (errors[name]) {
+    if (errors[name as keyof FormErrors]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
@@ -32,7 +58,7 @@ export const CheckoutForm = ({ cartItems, totalPrice, onClose, onOrderComplete }
   };
 
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: FormErrors = {};
     
     if (!formData.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!formData.email.trim()) newErrors.email = 'Email is required';
@@ -47,7 +73,7 @@ export const CheckoutForm = ({ cartItems, totalPrice, onClose, onOrderComplete }
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       onOrderComplete();

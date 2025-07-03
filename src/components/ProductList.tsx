@@ -2,7 +2,13 @@
 import React from 'react';
 import { ProductCard } from './ProductCard';
 
-export const ProductList = ({ products, searchTerm, selectedCategory, setSelectedCategory, onAddToCart }) => {
+export const ProductList = ({ products, searchTerm, selectedCategory, setSelectedCategory, onAddToCart }: {
+  products: any[];
+  searchTerm: string;
+  selectedCategory: string;
+  setSelectedCategory: (category: string) => void;
+  onAddToCart: (product: any) => void;
+}) => {
   const categories = ['All', ...new Set(products.map(p => p.category))];
   
   const filteredProducts = products.filter(product => {
@@ -17,17 +23,17 @@ export const ProductList = ({ products, searchTerm, selectedCategory, setSelecte
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-3">Filter by Category:</h3>
         <div className="flex flex-wrap gap-2">
-          {categories.map(category => (
+          {categories.map((category, index) => (
             <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
+              key={index}
+              onClick={() => setSelectedCategory(category as string)}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 selectedCategory === category
                   ? 'bg-blue-600 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
-              {category}
+              {category as string}
             </button>
           ))}
         </div>
